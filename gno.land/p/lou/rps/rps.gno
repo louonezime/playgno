@@ -1,20 +1,30 @@
 package rps
 
 import (
-	"std"
 	"errors"
+	"std"
 )
 
-var hands = []string{
-	"rock",
-	"paper",
-	"scissors",
-}
+var (
+	hands = []string{
+		"rock",
+		"paper",
+		"scissors",
+	}
+
+	ErrInvalidHand = errors.New("Invalid hand input: only rock, paper or scissors")
+)
 
 type Profile struct {
-	wins int64
-	losses int64
+	wins    int64
+	losses  int64
 	account string
+}
+
+type GameSession struct {
+	hasWon bool
+	isATie bool
+	detail string
 }
 
 func (profile Profile) Wins() int64 {
@@ -39,36 +49,78 @@ func (profile *Profile) SetLosses(losses int64) {
 
 func NewProfile(account string) *Profile {
 	return &Profile{
-		wins: 0,
-		losses: 0,
+		wins:    0,
+		losses:  0,
 		account: account,
 	}
 }
 
-func SendHand(input string) (string, bool, error) {
+func NewSession() *GameSession {
+	return &GameSession{
+		hasWon: false,
+		isATie: false,
+		detail: "",
+	}
+}
+
+func (game *GameSession) IsATie() bool {
+	return game.isATie
+}
+
+func (game *GameSession) HasWon() bool {
+	return game.hasWon
+}
+
+func (game *GameSession) SendHand(input string) error {
 	hand := GetHand()
+	game.isATie = false
+	game.hasWon = false
 
 	switch {
 	case input == hand:
-		return "It's a **tie**! Try Again!\n", false, errors.New("Not a win or loss")
+		game.detail = "It's a **tie**! Try Again!\n"
+		game.isATie = true
 	case input == "rock" && hand == "scissors":
-		return "**Rock** beats **Scissors**! You Won!\n", true, nil
+		game.detail = "**Rock** beats **Scissors**! You Won!\n"
+		game.hasWon = true
 	case input == "rock" && hand == "paper":
-		return "**Paper** beats **Rock**! You Lost!\n", false, nil
+		game.detail = "**Paper** beats **Rock**! You Lost!\n"
 	case input == "scissors" && hand == "paper":
-		return "**Scissors** beats **Paper**! You Won!\n", true, nil
+		game.detail = "**Scissors** beats **Paper**! You Won!\n"
+		game.hasWon = true
 	case input == "scissors" && hand == "rock":
-		return "**Rock** beats **Scissors**! You Lost!\n", false, nil
+		game.detail = "**Rock** beats **Scissors**! You Lost!\n"
 	case input == "paper" && hand == "rock":
-		return "**Paper** beats **Rock**! You Won!\n", true, nil
+		game.detail = "**Paper** beats **Rock**! You Won!\n"
+		game.hasWon = true
 	case input == "paper" && hand == "scissors":
-		return "**Scissors** beats **Paper**! You Lost!\n", false, nil
+		game.detail = "**Scissors** beats **Paper**! You Lost!\n"
 	default:
-		return "Invalid input!", false, errors.New("Not a valid input")
+		return ErrInvalidHand
 	}
+	return nil
 }
 
 func GetHand() string {
 	random := int(std.ChainHeight()) % len(hands)
-	return hands[random];
+	return hands[random]
+}
+
+func (profile Profile) String() string {
+	out := ""
+
+	if profile.Wins() > 0 || profile.Losses() > 0 {
+		out += "Career: "
+	}
+	for i := profile.Wins(); i > 0; i-- {
+		out += "🏆"
+	}
+	for i := profile.Losses(); i > 0; i-- {
+		out += "❌"
+	}
+	return out
+}
+
+func (game GameSession) String() string {
+	return game.detail
 }

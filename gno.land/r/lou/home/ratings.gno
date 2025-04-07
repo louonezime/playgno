@@ -8,71 +8,85 @@ import (
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
 
-	"gno.land/p/lou/post"
+	"gno.land/p/lou/comment"
 )
 
 var (
-	posts *avl.Tree
+	ratings *avl.Tree
 )
 
 func init() {
-	posts = avl.NewTree()
+	ratings = avl.NewTree()
 }
 
 func NewRating(rating int64) string {
 	caller := std.PreviousRealm().Address()
 
-	if _, exists := posts.Get(caller.String()); exists {
+	if _, exists := ratings.Get(caller.String()); exists {
 		panic(caller.String() + " has already rated! Update instead!")
 	}
-	p := post.NewRating(rating, caller.String())
-	posts.Set(caller.String(), p)
+	p := comment.NewRating(rating, caller.String())
+	ratings.Set(caller.String(), p)
 	return ufmt.Sprintf("Successfully added a #%d rating", rating)
 }
 
-func NewRatingWComment(rating int64, comment string) string {
+func NewRatingWComment(rating int64, commentStr string) string {
 	caller := std.PreviousRealm().Address()
 
-	if _, exists := posts.Get(caller.String()); exists {
+	if _, exists := ratings.Get(caller.String()); exists {
 		panic(caller.String() + " has already rated! Update instead!")
 	}
-	p := post.NewPost(rating, comment, caller.String())
-	posts.Set(caller.String(), p)
+	p := comment.NewComment(rating, commentStr, caller.String())
+	ratings.Set(caller.String(), p)
 	return ufmt.Sprintf("Successfully added a #%d rating with a comment", rating)
+}
+
+func UpdateRating(rating int64) string {
+	caller := std.PreviousRealm().Address()
+
+	if _, exists := ratings.Get(caller.String()); !exists {
+		panic("You cannot update this comment")
+	}
+	_, hasRemoved := ratings.Remove(caller.String())
+	if hasRemoved {
+		ratings.Set(caller.String(), NewRating(rating))
+		return ufmt.Sprintf(("Successfully updated rating!\n"))
+	}
+	panic("Invalid update of comment!");
 }
 
 func DeleteRating() string {
 	caller := std.PreviousRealm().Address()
 
-	if _, exists := posts.Get(caller.String()); !exists {
+	if _, exists := ratings.Get(caller.String()); !exists {
 		panic(caller.String() + " hasn't added a rating yet!")
 	}
-	value, isRemoved := posts.Remove(caller.String())
-	if isRemoved {
-		p := value.(*post.Post)
+	value, hasRemoved := ratings.Remove(caller.String())
+	if hasRemoved {
+		p := value.(*comment.Comment)
 		return ufmt.Sprintf("Rating of %s was removed successfully\n", p.Rating())
 	}
-	panic("Invalid removal of post!");
+	panic("Invalid removal of comment!");
 }
 
 func RenderRatings() string {
 	out := md.H2("★ Ratings ★\n\n")
 
-	if posts.Size() == 0 {
+	if ratings.Size() == 0 {
 		out += "No ratings found."
 	} else {
-		posts.ReverseIterate("", "", func(key string, value interface{}) bool {
-			post := value.(*post.Post)
+		ratings.ReverseIterate("", "", func(key string, value interface{}) bool {
+			comment := value.(*comment.Comment)
 			out += md.Bold(ufmt.Sprintf("[#%s]:", key))
 
-			out += ufmt.Sprintf(" (%d) ", post.Rating())
-			for i := post.Rating(); i > 0; i-- {
+			out += ufmt.Sprintf(" (%d) ", comment.Rating())
+			for i := comment.Rating(); i > 0; i-- {
 				out += "★"
 			}
-			if post.Comment() != nil {
-				out += ufmt.Sprintf(" %s [ ", *post.Comment())
+			if comment.Comment() != nil {
+				out += ufmt.Sprintf(" %s [ ", *comment.Comment())
 			}
-			out += md.Link("Delete", txlink.Call("DeleteRating"))
+			out += md.Link("🗑 DELETE", txlink.Call("DeleteRating"))
 			out += " ]\n\n"
 			return false
 		})

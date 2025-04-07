@@ -12,60 +12,53 @@ import (
 
 var (
 	profiles *avl.Tree
-	currentSession *rps.Profile
-	gameResult string
-	won bool
+	currentProfile *rps.Profile
+	gameSession *rps.GameSession
 )
 
 func init() {
-	currentSession = rps.NewProfile("")
+	currentProfile = rps.NewProfile("")
+	gameSession = rps.NewSession()
 	profiles = avl.NewTree()
-	gameResult = ""
-	won = false
 }
 
 func Play(input string) {
 	caller := std.PreviousRealm().Address()
+
 	foundProfile, _ := profiles.Get(caller.String())
 	if profile, ok := foundProfile.(*rps.Profile); ok {
-		currentSession = profile
+		currentProfile = profile
 	} else {
-		currentSession = rps.NewProfile("")
-		profiles.Set(caller.String(), currentSession)
+		currentProfile = rps.NewProfile("")
+		profiles.Set(caller.String(), currentProfile)
 	}
 
-	result, hasWon, hasError := rps.SendHand(input);
-	gameResult = result
-	if hasError != nil {
-		return
-	}
-	won = hasWon
-	if won {
-		currentSession.SetWins(currentSession.Wins() + 1)
+	if err := gameSession.SendHand(input); err != nil {
+		panic(err)
 	} else {
-		currentSession.SetLosses(currentSession.Losses() + 1)
+		if gameSession.IsATie() {
+			return
+		} else {
+			if gameSession.HasWon() {
+				currentProfile.SetWins(currentProfile.Wins() + 1)
+			} else {
+				currentProfile.SetLosses(currentProfile.Losses() + 1)
+			}
+		}
 	}
 }
 
 func RenderRockPaperScissors() string {
 	out := md.H2("Rock, Paper, Scissor\n\n")
-	// out += ufmt.Sprintf("Wins: %d, Losses: %d\n\n", currentSession.Wins(), currentSession.Losses())
-	if currentSession.Wins() > 0 || currentSession.Losses() > 0 {
-		out += "Career: "
-	}
-	for i := currentSession.Wins(); i > 0; i-- {
-		out += "🏆"
-	}
-	for i := currentSession.Losses(); i > 0; i-- {
-		out += "❌"
-	}
+	// out += ufmt.Sprintf("Wins: %d, Losses: %d\n\n", currentProfile.Wins(), currentProfile.Losses())
+	out += currentProfile.String()
 	out += "\n\nPlay [ "
 	out += md.Link("Rock", txlink.Call("Play", "input", "rock"))
 	out += " | "
 	out += md.Link("Paper", txlink.Call("Play", "input", "paper"))
 	out += " | "
 	out += md.Link("Scissors ", txlink.Call("Play", "input", "scissors"))
-	out += " ]\n\n" + gameResult
+	out += " ]\n\n" + gameSession.String()
 	out += "\n\n"
 	return out
 }
