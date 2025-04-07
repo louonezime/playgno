@@ -3,13 +3,27 @@ package rps
 import (
 	"errors"
 	"std"
+	"strings"
+
+	"gno.land/p/demo/ufmt"
+)
+
+const (
+	Rock     = "rock"
+	Paper    = "paper"
+	Scissors = "scissors"
 )
 
 var (
 	hands = []string{
-		"rock",
-		"paper",
-		"scissors",
+		Rock,
+		Paper,
+		Scissors,
+	}
+	winMap = map[string]string{
+		Rock:     Scissors,
+		Paper:    Rock,
+		Scissors: Paper,
 	}
 
 	ErrInvalidHand = errors.New("Invalid hand input: only rock, paper or scissors")
@@ -72,31 +86,22 @@ func (game *GameSession) HasWon() bool {
 }
 
 func (game *GameSession) SendHand(input string) error {
-	hand := GetHand()
+	if _, ok := winMap[input]; !ok {
+		return ErrInvalidHand
+	}
+
+	opponent := GetHand()
 	game.isATie = false
 	game.hasWon = false
 
-	switch {
-	case input == hand:
+	if input == opponent {
 		game.detail = "It's a **tie**! Try Again!\n"
 		game.isATie = true
-	case input == "rock" && hand == "scissors":
-		game.detail = "**Rock** beats **Scissors**! You Won!\n"
+	} else if winMap[input] == opponent {
+		game.detail = ufmt.Sprintf("**%s** beats **%s**! You Won!\n", input, opponent)
 		game.hasWon = true
-	case input == "rock" && hand == "paper":
-		game.detail = "**Paper** beats **Rock**! You Lost!\n"
-	case input == "scissors" && hand == "paper":
-		game.detail = "**Scissors** beats **Paper**! You Won!\n"
-		game.hasWon = true
-	case input == "scissors" && hand == "rock":
-		game.detail = "**Rock** beats **Scissors**! You Lost!\n"
-	case input == "paper" && hand == "rock":
-		game.detail = "**Paper** beats **Rock**! You Won!\n"
-		game.hasWon = true
-	case input == "paper" && hand == "scissors":
-		game.detail = "**Scissors** beats **Paper**! You Lost!\n"
-	default:
-		return ErrInvalidHand
+	} else {
+		game.detail = ufmt.Sprintf("**%s** beats **%s**! You Lost!\n", opponent, input)
 	}
 	return nil
 }
@@ -107,19 +112,16 @@ func GetHand() string {
 }
 
 func (profile Profile) String() string {
-	out := ""
+	var out strings.Builder
 
 	if profile.Wins() > 0 || profile.Losses() > 0 {
-		out += "Career: "
+		out.WriteString("Career: ")
 	}
-	for i := profile.Wins(); i > 0; i-- {
-		out += "🏆"
-	}
-	for i := profile.Losses(); i > 0; i-- {
-		out += "❌"
-	}
-	return out
+	out.WriteString(strings.Repeat("🏆", int(profile.Wins())))
+	out.WriteString(strings.Repeat("❌", int(profile.Losses())))
+	return out.String()
 }
+
 
 func (game GameSession) String() string {
 	return game.detail

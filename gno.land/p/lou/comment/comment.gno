@@ -1,35 +1,48 @@
 package comment
 
+import (
+	"std"
+
+	"gno.land/p/demo/seqid"
+)
+
 type Comment struct {
-	rating  int64
+	rating  uint64
 	comment *string
-	author  string
+	author  std.Address
+	id seqid.ID
 }
 
-func (post Comment) Rating() int64 {
-	return post.rating
+func (c Comment) Rating() uint64 {
+	return c.rating
 }
 
-func (post Comment) Comment() *string {
-	return post.comment
+func (c Comment) Comment() *string {
+	return c.comment
 }
 
-func (post Comment) Author() string {
-	return post.author
+func (c Comment) Author() std.Address {
+	return c.author
 }
 
-func NewComment(rating int64, comment string, author string) *Comment {
+func (c Comment) ID() seqid.ID {
+	return c.id
+}
+
+func NewComment(rating uint64, comment string, author std.Address, id seqid.ID) *Comment {
 	return &Comment{
 		rating:  rating,
 		comment: &comment,
 		author:  author,
+		id: id,
 	}
 }
 
-func NewRating(rating int64, author string) *Comment {
+func NewRating(rating uint64, author std.Address, id seqid.ID) *Comment {
 	return &Comment{
 		rating:  rating,
 		comment: nil,
 		author:  author,
+		id: id,
 	}
 }

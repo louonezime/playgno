@@ -8,12 +8,14 @@ import (
 	"gno.land/p/moul/txlink"
 
 	"gno.land/p/lou/rps"
+	"gno.land/p/lou/eightball"
 )
 
 var (
 	profiles *avl.Tree
 	currentProfile *rps.Profile
 	gameSession *rps.GameSession
+	eightballAnswer string
 )
 
 func init() {
@@ -21,6 +23,8 @@ func init() {
 	gameSession = rps.NewSession()
 	profiles = avl.NewTree()
 }
+
+// ROCK PAPER SCISSORS
 
 func Play(input string) {
 	caller := std.PreviousRealm().Address()
@@ -50,7 +54,6 @@ func Play(input string) {
 
 func RenderRockPaperScissors() string {
 	out := md.H2("Rock, Paper, Scissor\n\n")
-	// out += ufmt.Sprintf("Wins: %d, Losses: %d\n\n", currentProfile.Wins(), currentProfile.Losses())
 	out += currentProfile.String()
 	out += "\n\nPlay [ "
 	out += md.Link("Rock", txlink.Call("Play", "input", "rock"))
@@ -60,5 +63,21 @@ func RenderRockPaperScissors() string {
 	out += md.Link("Scissors ", txlink.Call("Play", "input", "scissors"))
 	out += " ]\n\n" + gameSession.String()
 	out += "\n\n"
+	return out
+}
+
+// MAGIC 8 BALL
+
+func Ask(question string) string {
+    answer := eightball.GetResponse(question)
+	eightballAnswer = answer + "\n\n"
+	return answer
+}
+
+func RenderMagic8Ball() string {
+	out := md.H2("Magic 8 Ball\n\n")
+	out += md.Link("[ ASK A QUESTION ]", txlink.Call("Ask", "question", "Question"))
+	out += "\n\n"
+	out += eightballAnswer
 	return out
 }
