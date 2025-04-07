@@ -6,6 +6,7 @@ import (
 
 func Render(path string) string {
 	out := md.H1("Lou's Home\n\n")
+	out += md.HorizontalRule()
 
 	out += RenderRockPaperScissors()
 	out += RenderMagic8Ball()
