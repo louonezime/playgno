@@ -10,12 +10,12 @@ import (
 const (
 	// Width Alignment
 	Center = "center"
-	Left = "left"
-	Right = "right"
+	Left   = "left"
+	Right  = "right"
 
 	// Height Alignment
 	Bottom = "bottom"
-	Top = "top"
+	Top    = "top"
 )
 
 // padLine aligns text within a given width.
@@ -63,7 +63,7 @@ func padHeight(lines []string, height int, align string) []string {
 // repeat returns repetition of a string n times.
 func repeat(char string, n int) string {
 	out := ""
-	
+
 	for i := 0; i < n; i++ {
 		out += char
 	}
@@ -73,75 +73,84 @@ func repeat(char string, n int) string {
 // Box draws a single-line text in a simple box.
 // If the string contains newlines, it falls back to FlexFrame function.
 //
-// Example: 
-//  Box("Hello World\n!")
+// Example:
+//
+//	Box("Hello World\n!")
+//
 // Gives:
-//  +-------------+
-//  | Hello World |
-//  | !           |
-//  +-------------+
+//
+//	+-------------+
+//	| Hello World |
+//	| !           |
+//	+-------------+
 func Box(text string) string {
-    width := len(text) + 4
+	width := len(text) + 4
 
-	if strings.Contains(text, "\n"){
+	if strings.Contains(text, "\n") {
 		return FlexFrame(strings.Split(text, "\n"), "left")
 	}
-	top := "+" + repeat("-", width - 2) + "+\n"
-    middle := "| " + text + " |\n"
-    bottom := "+" + repeat("-", width - 2) + "+"
-    
-	return md.CodeBlock(top + middle + bottom) + "\n"
+	top := "+" + repeat("-", width-2) + "+\n"
+	middle := "| " + text + " |\n"
+	bottom := "+" + repeat("-", width-2) + "+"
+
+	return md.CodeBlock(top+middle+bottom) + "\n"
 }
 
 // FlexFrame draws a frame with automatic width and alignment.
 //
 // Example:
-//  FlexFrame([]string{"hello", "worldd", "!!"}, "right")
+//
+//	FlexFrame([]string{"hello", "worldd", "!!"}, "right")
+//
 // Gives:
-//  +-------+
-//  |  hello |
-//  | worldd |
-//  |     !! |
-//  +-------+
+//
+//	+-------+
+//	|  hello |
+//	| worldd |
+//	|     !! |
+//	+-------+
 func FlexFrame(lines []string, align string) string {
 	maxWidth := 0
-    
+
 	for i := 0; i < len(lines); i++ {
 		if len(lines[i]) > maxWidth {
 			maxWidth = len(lines[i])
-        }
-    }
-	
-    top := "+" + repeat("-", maxWidth + 2) + "+\n"
-    bottom := "+" + repeat("-", maxWidth + 2) + "+"
+		}
+	}
 
-    body := ""
-    for i := 0; i < len(lines); i++ {
+	top := "+" + repeat("-", maxWidth+2) + "+\n"
+	bottom := "+" + repeat("-", maxWidth+2) + "+"
+
+	body := ""
+	for i := 0; i < len(lines); i++ {
 		body += "| " + padLine(lines[i], maxWidth, align) + " |\n"
-    }
+	}
 
-    return md.CodeBlock(top + body + bottom) + "\n"
+	return md.CodeBlock(top+body+bottom) + "\n"
 }
 
 // Frame draws a frame with specific width, height and alignment options.
 //
 // Example:
-//  Frame([]string{"hello", "world", "!!"}, "center", 10, 5, "center")
+//
+//	Frame([]string{"hello", "world", "!!"}, "center", 10, 5, "center")
+//
 // Gives:
-//  +------------+
-//  |            |
-//  |   hello    |
-//  |   world    |
-//  |     !!     |
-//  |            |
-//  +------------+
+//
+//	+------------+
+//	|            |
+//	|   hello    |
+//	|   world    |
+//	|     !!     |
+//	|            |
+//	+------------+
 func Frame(lines []string, wAlign string, width int, height int, hAlign string) string {
 	maxWidth := width
 	for i := 0; i < len(lines); i++ {
 		if len(lines[i]) > maxWidth {
 			maxWidth = len(lines[i])
-        }
-    }
+		}
+	}
 
 	if len(lines) > height {
 		height = len(lines)
@@ -156,13 +165,15 @@ func Frame(lines []string, wAlign string, width int, height int, hAlign string) 
 		body += "| " + padLine(line, maxWidth, wAlign) + " |\n"
 	}
 
-    return md.CodeBlock(top + body + bottom) + "\n"
+	return md.CodeBlock(top+body+bottom) + "\n"
 }
 
 // PercentageBar renders a visual progress bar.
 //
-// Example: 
-//  ProgressBar(2, 6, 10, true)
+// Example:
+//
+//	ProgressBar(2, 6, 10, true)
+//
 // Gives: [###-------] 33%
 func ProgressBar(current int, total int, size int, show bool) string {
 	if total == 0 {
@@ -170,45 +181,50 @@ func ProgressBar(current int, total int, size int, show bool) string {
 	}
 	percent := (current * 100) / total
 
-    return PercentageBar(percent, size, show)
+	return PercentageBar(percent, size, show)
 }
 
 // PercentageBar renders a visual progress bar.
 //
 // Example:
-//  PercentageBar(50, 6, false)
+//
+//	PercentageBar(50, 6, false)
+//
 // Gives: [###---]
 func PercentageBar(percent int, size int, show bool) string {
 	fillLength := (percent * size) / 100
-    emptyLength := size - fillLength
-	
-    filled := repeat("#", fillLength)
-    empty := repeat("-", emptyLength)
-	
+	emptyLength := size - fillLength
+
+	filled := repeat("#", fillLength)
+	empty := repeat("-", emptyLength)
+
 	out := "[" + filled + empty + "]"
 	if !show {
 		return out
 	}
-    return out + " " + strconv.Itoa(percent) + "%"
+	return out + " " + strconv.Itoa(percent) + "%"
 }
 
 // Grid renders a 2D grid of characters.
 //
 // Example:
-//  Grid(3, 3, "x")
+//
+//	Grid(3, 3, "x")
+//
 // Gives:
-//  xxx
-//  xxx
-//  xxx
+//
+//	xxx
+//	xxx
+//	xxx
 func Grid(rows int, cols int, fill string) string {
 	out := ""
-    
+
 	for r := 0; r < rows; r++ {
 		row := ""
-        for c := 0; c < cols; c++ {
+		for c := 0; c < cols; c++ {
 			row += fill
-        }
-        out += row + "\n"
-    }
-    return out
+		}
+		out += row + "\n"
+	}
+	return out
 }

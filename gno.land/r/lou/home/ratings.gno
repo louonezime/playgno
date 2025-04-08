@@ -126,11 +126,6 @@ func findRatingByID(id seqid.ID) (string, bool) {
 
 func RenderRatings() string {
 	out := md.H2("★ Ratings ★\n\n")
-	// out += md.Italic(`$help&func=NewRating&rating=\<uint64\>
-	// 	| $help&func=NewRating&rating=\<uint64\>&comment=\<string\>")
-	// 	| $help&func=UpdateRating&rating=\<uint64\>")
-	// 	| $help&func=UpdateRatingComment&rating=\<uint64\>&comment=\<string\>`)
-	// out += "\n\n"
 	out += md.Link("[ ADD A RATING ]", txlink.Call("NewRatingComment", "rating", "0", "comment", "Comment"))
 	out += "\n\n"
 

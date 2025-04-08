@@ -10,7 +10,7 @@ type Comment struct {
 	rating  uint64
 	comment *string
 	author  std.Address
-	id seqid.ID
+	id      seqid.ID
 }
 
 func (c Comment) Rating() uint64 {
@@ -34,7 +34,7 @@ func NewComment(rating uint64, comment string, author std.Address, id seqid.ID) 
 		rating:  rating,
 		comment: &comment,
 		author:  author,
-		id: id,
+		id:      id,
 	}
 }
 
@@ -43,6 +43,6 @@ func NewRating(rating uint64, author std.Address, id seqid.ID) *Comment {
 		rating:  rating,
 		comment: nil,
 		author:  author,
-		id: id,
+		id:      id,
 	}
 }

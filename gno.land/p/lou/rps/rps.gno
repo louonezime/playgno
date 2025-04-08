@@ -122,7 +122,6 @@ func (profile Profile) String() string {
 	return out.String()
 }
 
-
 func (game GameSession) String() string {
 	return game.detail
 }

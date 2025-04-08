@@ -7,14 +7,14 @@ import (
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
 
-	"gno.land/p/lou/rps"
 	"gno.land/p/lou/eightball"
+	"gno.land/p/lou/rps"
 )
 
 var (
-	profiles *avl.Tree
-	currentProfile *rps.Profile
-	gameSession *rps.GameSession
+	profiles        *avl.Tree
+	currentProfile  *rps.Profile
+	gameSession     *rps.GameSession
 	eightballAnswer string
 )
 
@@ -69,7 +69,7 @@ func RenderRockPaperScissors() string {
 // MAGIC 8 BALL
 
 func Ask(question string) string {
-    answer := eightball.GetResponse(question)
+	answer := eightball.GetResponse(question)
 	eightballAnswer = answer + "\n\n"
 	return answer
 }
