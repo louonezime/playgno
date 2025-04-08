@@ -16,6 +16,9 @@ import (
 var (
 	ratings  *avl.Tree
 	ratingID seqid.ID
+
+	title = ""
+	desc = ""
 )
 
 func init() {
@@ -27,7 +30,7 @@ func NewRating(rating uint64) string {
 	return addRating(rating, "")
 }
 
-func NewRatingComment(rating uint64, comment string) string {
+func NewRatingComment(comment string, rating uint64) string {
 	return addRating(rating, comment)
 }
 
@@ -53,7 +56,7 @@ func UpdateRating(rating uint64) string {
 	return updateRating(rating, "")
 }
 
-func UpdateRatingComment(rating uint64, comment string) string {
+func UpdateRatingComment(comment string, rating uint64) string {
 	return updateRating(rating, comment)
 }
 
@@ -72,7 +75,7 @@ func updateRating(rating uint64, commentStr string) string {
 	return addRating(rating, commentStr) + "\nSuccessfully updated rating!\n"
 }
 
-func UpdateByID(id seqid.ID, rating uint64, comment string) string {
+func UpdateByID(comment string, id seqid.ID, rating uint64) string {
 	caller := std.PreviousRealm().Address()
 
 	if key, found := findRatingByID(id); found {
@@ -126,12 +129,7 @@ func findRatingByID(id seqid.ID) (string, bool) {
 
 func RenderRatings() string {
 	out := md.H2("★ Ratings ★\n\n")
-	// out += md.Italic(`$help&func=NewRating&rating=\<uint64\>
-	// 	| $help&func=NewRating&rating=\<uint64\>&comment=\<string\>")
-	// 	| $help&func=UpdateRating&rating=\<uint64\>")
-	// 	| $help&func=UpdateRatingComment&rating=\<uint64\>&comment=\<string\>`)
-	// out += "\n\n"
-	out += md.Link("[ ADD A RATING ]", txlink.Call("NewRatingComment", "rating", "0", "comment", "Comment"))
+	out += md.Link("[ ADD A RATING ]", txlink.Call("NewRatingComment", "comment", "Comment", "rating", "0"))
 	out += "\n\n"
 
 	if ratings.Size() == 0 {
@@ -153,7 +151,7 @@ func RenderRatings() string {
 			if comment.Comment() != nil {
 				out += ufmt.Sprintf(" %s [ ", *comment.Comment())
 			}
-			out += md.Link("✎ EDIT", txlink.Call("UpdateByID", "id", comment.ID().String(), "rating", "0", "comment", "Comment"))
+			out += md.Link("✎ EDIT", txlink.Call("UpdateByID", "comment", "Comment", "id", comment.ID().String(), "rating", "0"))
 			out += " | "
 			out += md.Link("🗑 DELETE", txlink.Call("DeleteRating", "id", comment.ID().String()))
 			out += " ]\n\n"
