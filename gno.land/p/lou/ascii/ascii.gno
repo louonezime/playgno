@@ -25,13 +25,13 @@ func padLine(line string, width int, align string) string {
 	padding := width - len(line)
 	switch align {
 	case Right:
-		return repeat(" ", padding) + line
+		return Repeat(" ", padding) + line
 	case Center:
 		left := padding / 2
 		right := padding - left
-		return repeat(" ", left) + line + repeat(" ", right)
+		return Repeat(" ", left) + line + Repeat(" ", right)
 	default: // Left
-		return line + repeat(" ", padding)
+		return line + Repeat(" ", padding)
 	}
 }
 
@@ -60,8 +60,8 @@ func padHeight(lines []string, height int, align string) []string {
 	return padded
 }
 
-// repeat returns repetition of a string n times.
-func repeat(char string, n int) string {
+// Repeat returns repetition of a string n times.
+func Repeat(char string, n int) string {
 	out := ""
 
 	for i := 0; i < n; i++ {
@@ -89,9 +89,9 @@ func Box(text string) string {
 	if strings.Contains(text, "\n") {
 		return FlexFrame(strings.Split(text, "\n"), "left")
 	}
-	top := "+" + repeat("-", width-2) + "+\n"
+	top := "+" + Repeat("-", width-2) + "+\n"
 	middle := "| " + text + " |\n"
-	bottom := "+" + repeat("-", width-2) + "+"
+	bottom := "+" + Repeat("-", width-2) + "+"
 
 	return md.CodeBlock(top+middle+bottom) + "\n"
 }
@@ -118,8 +118,8 @@ func FlexFrame(lines []string, align string) string {
 		}
 	}
 
-	top := "+" + repeat("-", maxWidth+2) + "+\n"
-	bottom := "+" + repeat("-", maxWidth+2) + "+"
+	top := "+" + Repeat("-", maxWidth+2) + "+\n"
+	bottom := "+" + Repeat("-", maxWidth+2) + "+"
 
 	body := ""
 	for i := 0; i < len(lines); i++ {
@@ -157,8 +157,8 @@ func Frame(lines []string, wAlign string, width int, height int, hAlign string) 
 	}
 	lines = padHeight(lines, height, hAlign)
 
-	top := "+" + repeat("-", maxWidth+2) + "+\n"
-	bottom := "+" + repeat("-", maxWidth+2) + "+"
+	top := "+" + Repeat("-", maxWidth+2) + "+\n"
+	bottom := "+" + Repeat("-", maxWidth+2) + "+"
 	body := ""
 
 	for _, line := range lines {
@@ -195,8 +195,8 @@ func PercentageBar(percent int, size int, show bool) string {
 	fillLength := (percent * size) / 100
 	emptyLength := size - fillLength
 
-	filled := repeat("#", fillLength)
-	empty := repeat("-", emptyLength)
+	filled := Repeat("#", fillLength)
+	empty := Repeat("-", emptyLength)
 
 	out := "[" + filled + empty + "]"
 	if !show {

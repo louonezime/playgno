@@ -3,9 +3,10 @@ package rps
 import (
 	"errors"
 	"std"
-	"strings"
 
 	"gno.land/p/demo/ufmt"
+
+	"gno.land/p/lou/ascii"
 )
 
 const (
@@ -112,14 +113,14 @@ func GetHand() string {
 }
 
 func (profile Profile) String() string {
-	var out strings.Builder
+	out := ""
 
 	if profile.Wins() > 0 || profile.Losses() > 0 {
-		out.WriteString("Career: ")
+		out += "Career: "
 	}
-	out.WriteString(strings.Repeat("🏆", int(profile.Wins())))
-	out.WriteString(strings.Repeat("❌", int(profile.Losses())))
-	return out.String()
+	out += ascii.Repeat("🏆", int(profile.Wins()))
+	out += ascii.Repeat("❌", int(profile.Losses()))
+	return out
 }
 
 func (game GameSession) String() string {

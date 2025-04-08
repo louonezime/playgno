@@ -126,7 +126,7 @@ func findRatingByID(id seqid.ID) (string, bool) {
 
 func RenderRatings() string {
 	out := md.H2("★ Ratings ★\n\n")
-	out += md.Link("[ ADD A RATING ]", txlink.Call("NewRatingComment", "rating", "0", "comment", "Comment"))
+	out += md.Link("[ ADD A RATING ]", txlink.Call("NewRatingComment", "comment", "Comment", "rating", "0"))
 	out += "\n\n"
 
 	if ratings.Size() == 0 {
@@ -148,7 +148,7 @@ func RenderRatings() string {
 			if comment.Comment() != nil {
 				out += ufmt.Sprintf(" %s [ ", *comment.Comment())
 			}
-			out += md.Link("✎ EDIT", txlink.Call("UpdateByID", "id", comment.ID().String(), "rating", "0", "comment", "Comment"))
+			out += md.Link("✎ EDIT", txlink.Call("UpdateByID", "comment", "Comment", "id", comment.ID().String(), "rating", "0"))
 			out += " | "
 			out += md.Link("🗑 DELETE", txlink.Call("DeleteRating", "id", comment.ID().String()))
 			out += " ]\n\n"

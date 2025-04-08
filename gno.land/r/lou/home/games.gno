@@ -28,27 +28,32 @@ func init() {
 
 func Play(input string) {
 	caller := std.PreviousRealm().Address()
+	addr := caller.String()
 
-	foundProfile, _ := profiles.Get(caller.String())
-	if profile, ok := foundProfile.(*rps.Profile); ok {
-		currentProfile = profile
-	} else {
-		currentProfile = rps.NewProfile("")
-		profiles.Set(caller.String(), currentProfile)
+	value, ok := profiles.Get(addr)
+	var profile *rps.Profile
+
+	if ok {
+		profile, _ = value.(*rps.Profile)
 	}
+	if profile == nil {
+		profile = rps.NewProfile("")
+		profiles.Set(addr, profile)
+	}
+	currentProfile = profile
 
 	if err := gameSession.SendHand(input); err != nil {
 		panic(err)
+	}
+
+	if gameSession.IsATie() {
+		return
+	}
+
+	if gameSession.HasWon() {
+		profile.SetWins(profile.Wins() + 1)
 	} else {
-		if gameSession.IsATie() {
-			return
-		} else {
-			if gameSession.HasWon() {
-				currentProfile.SetWins(currentProfile.Wins() + 1)
-			} else {
-				currentProfile.SetLosses(currentProfile.Losses() + 1)
-			}
-		}
+		profile.SetLosses(profile.Losses() + 1)
 	}
 }
 

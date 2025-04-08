@@ -35,9 +35,14 @@ func GetResponse(seed string) string {
 }
 
 func HashString(s string) int {
+	const prime = 31
 	hash := 0
+
 	for i := 0; i < len(s); i++ {
-		hash = (hash*31 + int(s[i])) % len(decisions)
+		hash = hash*prime + int(s[i])
+	}
+	if hash < 0 {
+		hash = -hash
 	}
 	return hash
 }
