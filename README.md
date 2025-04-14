@@ -1,5 +1,7 @@
 # play.gno
 
+Repository to play around with gno to create some POCs
+
 ## Prerequisites
 
 Make sure you have the following installed:
