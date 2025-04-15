@@ -2,11 +2,25 @@ package curator
 
 import (
 	"std"
+
+	"gno.land/p/demo/seqid"
 )
 
 var (
 	collections = make(map[string]Collection)
 )
+
+type Collection struct {
+	ID seqid.ID
+	Title string
+	Description string
+	Owner std.Address
+	Items []string
+}
+
+type Card struct {
+
+}
 
 func CreateCollection(title string, description string) {
 	if _, ok := collections[title]; ok {
