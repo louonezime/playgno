@@ -14,13 +14,13 @@ type HAlignment string
 const (
 	// Width Alignment
 	AlignWCenter WAlignment = "center"
-	AlignLeft   WAlignment = "left"
-	AlignRight  WAlignment = "right"
+	AlignLeft    WAlignment = "left"
+	AlignRight   WAlignment = "right"
 
 	// Height Alignment
 	AlignHCenter HAlignment = "center"
-	AlignTop    HAlignment = "top"
-	AlignBottom HAlignment = "bottom"
+	AlignTop     HAlignment = "top"
+	AlignBottom  HAlignment = "bottom"
 )
 
 // PadLine aligns text within a given width.
@@ -95,11 +95,11 @@ func Box(text string) string {
 	if strings.Contains(text, "\n") {
 		return FlexFrame(strings.Split(text, "\n"), "left")
 	}
-	top := "+" + Repeat("-", width - 2) + ufmt.Sprintf("[%d] = %s", len(text), text) + "+\n"
+	top := "+" + Repeat("-", width-2) + ufmt.Sprintf("[%d] = %s", len(text), text) + "+\n"
 	middle := "| " + text + " |\n"
-	bottom := "+" + Repeat("-", width - 2) + "+"
+	bottom := "+" + Repeat("-", width-2) + "+"
 
-	return md.CodeBlock(top + middle + bottom) + "\n"
+	return md.CodeBlock(top+middle+bottom) + "\n"
 }
 
 // FlexFrame draws a frame with automatic width and alignment.
@@ -124,8 +124,8 @@ func FlexFrame(lines []string, align WAlignment) string {
 		}
 	}
 
-	top := "+" + Repeat("-", maxWidth + 2) + "+\n"
-	bottom := "+" + Repeat("-", maxWidth + 2) + "+"
+	top := "+" + Repeat("-", maxWidth+2) + "+\n"
+	bottom := "+" + Repeat("-", maxWidth+2) + "+"
 
 	body := ""
 	for i := 0; i < len(lines); i++ {
@@ -163,19 +163,19 @@ func Frame(lines []string, wAlign WAlignment, width int, height int, hAlign HAli
 	}
 	lines = PadHeight(lines, height, hAlign)
 
-	top := "+" + Repeat("-", maxWidth + 2) + "+\n"
-	bottom := "+" + Repeat("-", maxWidth + 2) + "+"
+	top := "+" + Repeat("-", maxWidth+2) + "+\n"
+	bottom := "+" + Repeat("-", maxWidth+2) + "+"
 	body := ""
 
 	for _, line := range lines {
 		body += "| " + PadLine(line, maxWidth, wAlign, " ") + " |\n"
 	}
 
-	return md.CodeBlock(top + body + bottom) + "\n"
+	return md.CodeBlock(top+body+bottom) + "\n"
 }
 
-// TODO!!!!!!!!
-// FixedFrame draws a frame with specific width, height and alignment options with no flexing.
+// FixedFrame draws a frame with a fixed width and height, truncating or wrapping content as needed.
+// Width and height include the content area, not the frame borders.
 //
 // Example:
 //
@@ -190,27 +190,39 @@ func Frame(lines []string, wAlign WAlignment, width int, height int, hAlign HAli
 //	|            |
 //	+------------+
 func FixedFrame(lines []string, wAlign WAlignment, width int, height int, hAlign HAlignment) string {
-	maxWidth := width
-	for i := 0; i < len(lines); i++ {
-		if len(lines[i]) > maxWidth {
-			maxWidth = len(lines[i])
+	var wrapped []string
+
+	for _, line := range lines {
+		words := strings.Fields(line)
+		current := ""
+		for _, word := range words {
+			if len(current)+len(word)+1 > width {
+				wrapped = append(wrapped, current)
+				current = word
+			} else {
+				if current == "" {
+					current = word
+				} else {
+					current += " " + word
+				}
+			}
+		}
+		if current != "" {
+			wrapped = append(wrapped, current)
 		}
 	}
 
-	if len(lines) > height {
-		height = len(lines)
-	}
-	lines = PadHeight(lines, height, hAlign)
+	wrapped = PadHeight(wrapped, height, hAlign)
 
-	top := "+" + Repeat("-", maxWidth + 2) + "+\n"
-	bottom := "+" + Repeat("-", maxWidth + 2) + "+"
+	top := "+" + Repeat("-", width+2) + "+\n"
+	bottom := "+" + Repeat("-", width+2) + "+"
+
 	body := ""
-
-	for _, line := range lines {
-		body += "| " + PadLine(line, maxWidth, wAlign, " ") + " |\n"
+	for _, line := range wrapped {
+		body += "| " + PadLine(line, width, wAlign, " ") + " |\n"
 	}
 
-	return md.CodeBlock(top + body + bottom) + "\n"
+	return md.CodeBlock(top+body+bottom) + "\n"
 }
 
 // PercentageBar renders a visual progress bar.

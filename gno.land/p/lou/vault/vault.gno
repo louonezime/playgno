@@ -7,14 +7,14 @@ import (
 )
 
 type Deposit struct {
-	Amount  uint64
-	Owner   std.Address
-	Unlock  int64 // block height or timestamp
+	Amount uint64
+	Owner  std.Address
+	Unlock int64 // block height or timestamp
 }
 
 var deposits = map[string]Deposit{}
-// var token grc20.TokenGetter
 var token grc20.Token
+var ledger grc20.PrivateLedger
 
 func Init(tok grc20.Token) {
 	token = tok
@@ -23,7 +23,7 @@ func Init(tok grc20.Token) {
 // Deposit tokens to vault
 func Lock(id string, amount uint64, unlock int64) {
 	from := std.PreviousRealm().Address()
-	if err := token.Ledger().Transfer(from, std.PreviousRealm().Address(), amount); err != nil {
+	if err := ledger.Transfer(from, std.PreviousRealm().Address(), amount); err != nil {
 		panic(err)
 	}
 	deposits[id] = Deposit{
@@ -46,5 +46,5 @@ func Withdraw(id string) {
 	}
 
 	delete(deposits, id)
-	token().Ledger().Transfer(std.PreviousRealm().Address(), dep.Owner, dep.Amount)
+	ledger.Transfer(std.PreviousRealm().Address(), dep.Owner, dep.Amount)
 }

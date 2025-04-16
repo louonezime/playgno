@@ -11,7 +11,7 @@ import (
 
 var (
 	Ownable = ownable.NewWithAddress("g14x2crt492f84shxa9s7e5ulk7lnf2p3euz7r9n")
-	
+
 	admin  = std.Address("g1pfyhn0d7g4tnp6wft9ge4cuu88ppr9u8mdggfs")
 	token  *grc20.Token
 	ledger *grc20.PrivateLedger

@@ -11,15 +11,14 @@ var (
 )
 
 type Collection struct {
-	ID seqid.ID
-	Title string
+	ID          seqid.ID
+	Title       string
 	Description string
-	Owner std.Address
-	Items []string
+	Owner       std.Address
+	Items       []string
 }
 
 type Card struct {
-
 }
 
 func CreateCollection(title string, description string) {
