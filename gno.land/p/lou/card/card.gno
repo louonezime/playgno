@@ -3,9 +3,8 @@ package card
 import (
 	"strings"
 
-	"gno.land/p/moul/md"
-
 	"gno.land/p/lou/ascii"
+	"gno.land/p/moul/md"
 )
 
 type Card struct {

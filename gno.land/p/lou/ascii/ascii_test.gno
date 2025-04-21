@@ -8,7 +8,7 @@ import (
 // padLine
 
 func TestPadLine_Left(t *testing.T) {
-	got := padLine("hi", 6, Left)
+	got := PadLine("hi", 6, AlignLeft, " ")
 	want := "hi    "
 	if got != want {
 		t.Fatalf("padLine left failed: got '%s', want '%s'", got, want)
@@ -16,7 +16,7 @@ func TestPadLine_Left(t *testing.T) {
 }
 
 func TestPadLine_Right(t *testing.T) {
-	got := padLine("hi", 6, Right)
+	got := PadLine("hi", 6, AlignRight, " ")
 	want := "    hi"
 	if got != want {
 		t.Fatalf("padLine right failed: got '%s', want '%s'", got, want)
@@ -24,7 +24,7 @@ func TestPadLine_Right(t *testing.T) {
 }
 
 func TestPadLine_Center(t *testing.T) {
-	got := padLine("hi", 6, Center)
+	got := PadLine("hi", 6, AlignWCenter, " ")
 	want := "  hi  "
 	if got != want {
 		t.Fatalf("padLine center failed: got '%s', want '%s'", got, want)
@@ -35,7 +35,7 @@ func TestPadLine_Center(t *testing.T) {
 
 func TestPadHeight_Top(t *testing.T) {
 	lines := []string{"one", "two"}
-	out := padHeight(lines, 4, Top)
+	out := PadHeight(lines, 4, AlignTop)
 	if len(out) != 4 || out[0] != "one" || out[3] != "" {
 		t.Fatalf("padHeight top failed: got %#v", out)
 	}
@@ -43,7 +43,7 @@ func TestPadHeight_Top(t *testing.T) {
 
 func TestPadHeight_Center(t *testing.T) {
 	lines := []string{"one"}
-	out := padHeight(lines, 3, Center)
+	out := PadHeight(lines, 3, AlignHCenter)
 	if len(out) != 3 || out[0] != "" || out[1] != "one" || out[2] != "" {
 		t.Fatalf("padHeight center failed: got %#v", out)
 	}
@@ -51,7 +51,7 @@ func TestPadHeight_Center(t *testing.T) {
 
 func TestPadHeight_Bottom(t *testing.T) {
 	lines := []string{"one"}
-	out := padHeight(lines, 2, Bottom)
+	out := PadHeight(lines, 2, AlignBottom)
 	if len(out) != 2 || out[0] != "" || out[1] != "one" {
 		t.Fatalf("padHeight bottom failed: got %#v", out)
 	}
@@ -77,7 +77,7 @@ func TestBox_MultiLineFallback(t *testing.T) {
 
 func TestFlexFrame(t *testing.T) {
 	lines := []string{"Short", "A bit longer"}
-	got := FlexFrame(lines, Right)
+	got := FlexFrame(lines, AlignRight)
 	if !strings.Contains(got, "|        Short |") {
 		t.Fatalf("FlexFrame right alignment failed:\n%s", got)
 	}
@@ -87,7 +87,7 @@ func TestFlexFrame(t *testing.T) {
 
 func TestFrame_SizeAlign(t *testing.T) {
 	lines := []string{"line"}
-	got := Frame(lines, Center, 10, 3, Center)
+	got := Frame(lines, AlignWCenter, 10, 3, AlignHCenter)
 	if res := strings.Count(got, "\n"); res != 7 {
 		t.Fatalf("Frame height failed (got %d):\n%s", res, got)
 	}

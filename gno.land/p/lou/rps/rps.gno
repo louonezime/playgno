@@ -6,7 +6,6 @@ import (
 
 	"gno.land/p/demo/grc/grc20"
 	"gno.land/p/demo/ufmt"
-
 	"gno.land/p/lou/ascii"
 	"gno.land/p/lou/tokenaccess"
 )

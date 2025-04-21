@@ -6,11 +6,11 @@ import (
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/seqid"
+	"gno.land/p/lou/curator"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
+	
 	"gno.land/r/sys/users"
-
-	"gno.land/p/lou/curator"
 )
 
 var (
@@ -129,7 +129,7 @@ func Render(path string) string {
 	out := md.H1("Collections") + "\n\n"
 	out += md.HorizontalRule()
 
-	out += "### " + md.Link("CREATE A COLLECTION ", txlink.Call("")) + "\n\n"
+	out += "### " + md.Link("CREATE A COLLECTION ", txlink.Call("NewCollection", "title", "Title", "description", "Description", "tags", "Tags")) + "\n\n"
 	if collections.Size() == 0 {
 		out += "No collections found.\n\n"
 	} else {

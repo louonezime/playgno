@@ -6,11 +6,11 @@ import (
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/seqid"
 	"gno.land/p/demo/ufmt"
+	"gno.land/p/lou/comment"
 	"gno.land/p/moul/md"
 	"gno.land/p/moul/txlink"
+	
 	"gno.land/r/sys/users"
-
-	"gno.land/p/lou/comment"
 )
 
 var (
